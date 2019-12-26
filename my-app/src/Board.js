@@ -39,13 +39,13 @@ export default class Board extends React.Component {
         let gameboardState = this.state.gameboardState;
         let numOfInitialGrid = Math.random() < 0.5 ? 2 : 3;
         for (var i = 0; i < numOfInitialGrid; i++) {
-            let x = Math.floor(Math.random()*4);
-            let y = Math.floor(Math.random()*4);
+            let x = Math.floor(Math.random() * 4);
+            let y = Math.floor(Math.random() * 4);
             gameboardState[x][y] = Math.random() < probOfFour ? 4 : 2;
         }
         console.log(gameboardState)
 
-        this.setState({gameboardState : gameboardState});
+        this.setState({ gameboardState: gameboardState });
     }
 
     generateNewTile(probOfFour) {
@@ -58,148 +58,171 @@ export default class Board extends React.Component {
                 }
             }
         }
-        let random = Math.floor(Math.random()*countZeros);
+
+        let random = Math.floor(Math.random() * countZeros);
         let fillZero = 0;
-        for (var i = 0; i < gameboardState.length; i++) {
-            for (var j = 0; j < gameboardState[i].length; j++) {
-                if (random === fillZero) {
-                    gameboardState[i][j] = Math.random() < probOfFour ? 4 : 2;
-                    break;
+        for (var a = 0; a < gameboardState.length; a++) {
+            for (var b = 0; b < gameboardState[a].length; b++) {
+                if (random === fillZero && gameboardState[a][b] === 0) {
+                    gameboardState[a][b] = Math.random() < probOfFour ? 4 : 2;
+                    console.log(a + "-" + b)
+                    this.setState({ gameboardState: gameboardState });
+                    return;
                 }
-                if (gameboardState[i][j] === 0) {
+                if (gameboardState[a][b] === 0) {
                     fillZero++;
                 }
             }
         }
-
-        this.setState({gameboardState : gameboardState});
     }
 
     handleMove(e) {
         switch (e.keyCode) {
-            case 37: this.handleMoveLeft(); break;
-            case 38: this.handleMoveUp(); break;
-            case 39: this.handleMoveRight(); break;
-            case 40: this.handleMoveDown(); break;
-            default : break;
+            case 37: if (this.handleMoveLeft()) { this.generateNewTile(0.3) } break;
+            case 38: if (this.handleMoveUp()) { this.generateNewTile(0.3) } break;
+            case 39: if (this.handleMoveRight()) { this.generateNewTile(0.3) } break;
+            case 40: if (this.handleMoveDown()) { this.generateNewTile(0.3) } break;
+            default: break;
         }
-
-        this.generateNewTile(0.3)
-
-        console.log(this.state.gameboardState);
     }
 
     handleMoveUp() {
         let gameboardState = this.state.gameboardState;
         let moveTo = 0;
-        for (var i = gameboardState.length - 1; i > 0; i--) {
+        var changed = false;
+        for (var i = 1; i < gameboardState.length; i++) {
             for (var j = 0; j < gameboardState[i].length; j++) {
-                for (var k = i - 1; k >= 0; k--) {
-                    let kth = gameboardState[k][j];
-                    if (kth !== 0 && kth !== gameboardState[i][j]) {
-                        moveTo = k + 1;
-                        break;
+                if (gameboardState[i][j] !== 0) {
+                    for (var k = i - 1; k >= 0; k--) {
+                        let kth = gameboardState[k][j];
+                        if (kth !== 0 && kth !== gameboardState[i][j]) {
+                            moveTo = k + 1;
+                            break;
+                        }
+                    }
+                    if (moveTo !== i) {
+                        //animation
+                        if (gameboardState[moveTo][j] === 0) {
+                            gameboardState[moveTo][j] = gameboardState[i][j];
+                            gameboardState[i][j] = 0;
+                        } else if (gameboardState[moveTo][j] === gameboardState[i][j]) {
+                            gameboardState[moveTo][j] = gameboardState[i][j] * 2;
+                            gameboardState[i][j] = 0;
+                        }
+                        changed = true;
                     }
                 }
-                if (moveTo !== i) {
-                    //animation
-                    if (gameboardState[moveTo][j] === 0) {
-                        gameboardState[moveTo][j] = gameboardState[i][j];
-                        gameboardState[i][j] = 0;
-                        this.setState({gameboardState: gameboardState});
-                    } else if (gameboardState[moveTo][j] === gameboardState[i][j]) {
-                        gameboardState[moveTo][j] = gameboardState[i][j] * 2;
-                        gameboardState[i][j] = 0;
-                        this.setState({gameboardState: gameboardState});
-                    }
-                }
+                moveTo = 0;
             }
         }
+
+        this.setState({ gameboardState: gameboardState });
+        return changed;
     }
 
     handleMoveDown() {
         let gameboardState = this.state.gameboardState;
         let moveTo = gameboardState.length - 1;
-        for (var i = 0; i < gameboardState.length - 1; i++) {
+        var changed = false;
+        for (var i = gameboardState.length - 2; i >= 0; i--) {
             for (var j = 0; j < gameboardState[i].length; j++) {
-                for (var k = i + 1; k < gameboardState.length; k++) {
-                    let kth = gameboardState[k][j];
-                    if (kth !== 0 && kth !== gameboardState[i][j]) {
-                        moveTo = k - 1;
-                        break;
+                if (gameboardState[i][j] !== 0) {
+                    for (var k = i + 1; k < gameboardState.length; k++) {
+                        let kth = gameboardState[k][j];
+                        if (kth !== 0 && kth !== gameboardState[i][j]) {
+                            moveTo = k - 1;
+                            break;
+                        }
+                    }
+                    if (moveTo !== i) {
+                        //animation
+                        if (gameboardState[moveTo][j] === 0) {
+                            gameboardState[moveTo][j] = gameboardState[i][j];
+                            gameboardState[i][j] = 0;
+                        } else if (gameboardState[moveTo][j] === gameboardState[i][j]) {
+                            gameboardState[moveTo][j] = gameboardState[i][j] * 2;
+                            gameboardState[i][j] = 0;
+                        }
+                        changed = true;
                     }
                 }
-                if (moveTo !== i) {
-                    //animation
-                    if (gameboardState[moveTo][j] === 0) {
-                        gameboardState[moveTo][j] = gameboardState[i][j];
-                        gameboardState[i][j] = 0;
-                        this.setState({gameboardState: gameboardState});
-                    } else if (gameboardState[moveTo][j] === gameboardState[i][j]) {
-                        gameboardState[moveTo][j] = gameboardState[i][j] * 2;
-                        gameboardState[i][j] = 0;
-                        this.setState({gameboardState: gameboardState});
-                    }
-                }
+
+                moveTo = gameboardState.length - 1;
             }
         }
+
+        this.setState({ gameboardState: gameboardState });
+        return changed;
     }
 
     handleMoveLeft() {
         let gameboardState = this.state.gameboardState;
         let moveTo = 0;
+        var changed = false;
         for (var i = 0; i < gameboardState.length; i++) {
             for (var j = 1; j < gameboardState[i].length; j++) {
-                for (var k = j - 1; k > 0; k--) {
-                    let kth = gameboardState[i][k]
-                    if (kth !== 0 && kth !== gameboardState[i][j]) {
-                        moveTo = k + 1;
-                        break;
+                if (gameboardState[i][j] !== 0) {
+                    for (var k = j - 1; k >= 0; k--) {
+                        let kth = gameboardState[i][k]
+                        if (kth !== 0 && kth !== gameboardState[i][j]) {
+                            moveTo = k + 1;
+                            break;
+                        }
+                    }
+                    if (moveTo !== j) {
+                        //animation
+                        if (gameboardState[i][moveTo] === 0) {
+                            gameboardState[i][moveTo] = gameboardState[i][j];
+                            gameboardState[i][j] = 0;
+                        } else if (gameboardState[i][moveTo] === gameboardState[i][j]) {
+                            gameboardState[i][moveTo] = gameboardState[i][j] * 2;
+                            gameboardState[i][j] = 0;
+                        }
+                        changed = true;
                     }
                 }
-                console.log(moveTo + "@@@" + i)
-                if (moveTo !== i) {
-                    //animation
-                    if (gameboardState[i][moveTo] === 0) {
-                        gameboardState[i][moveTo] = gameboardState[i][j];
-                        gameboardState[i][j] = 0;
-                        this.setState({gameboardState: gameboardState});
-                    } else if (gameboardState[i][moveTo] === gameboardState[i][j]) {
-                        gameboardState[i][moveTo] = gameboardState[i][j] * 2;
-                        gameboardState[i][j] = 0;
-                        this.setState({gameboardState: gameboardState});
-                    }
-                }
+
+                moveTo = 0;
             }
         }
+
+        this.setState({ gameboardState: gameboardState });
+        return changed;
     }
 
     handleMoveRight() {
         let gameboardState = this.state.gameboardState;
-        let moveTo = -1;
-        for (var i = gameboardState.length - 1; i > 0; i--) {
-            for (var j = 0; j < gameboardState[i].length - 1; j++) {
-                for (var k = i + 1; k < gameboardState.length[i]; k++) {
-                    let kth = gameboardState[i][k]
-                    if (kth !== 0 && kth !== gameboardState[i][j]) {
-                        moveTo = k - 1;
-                        break;
+        let moveTo = gameboardState.length - 1;
+        var changed = false;
+        for (var i = 0; i < gameboardState.length; i++) {
+            for (var j = gameboardState[i].length - 2; j >= 0; j--) {
+                if (gameboardState[i][j] !== 0) {
+                    for (var k = j + 1; k < gameboardState[j].length; k++) {
+                        let kth = gameboardState[i][k]
+                        if (kth !== 0 && kth !== gameboardState[i][j]) {
+                            moveTo = k - 1;
+                            break;
+                        }
+                    }
+                    if (moveTo !== j) {
+                        //animation
+                        if (gameboardState[i][moveTo] === 0) {
+                            gameboardState[i][moveTo] = gameboardState[i][j];
+                            gameboardState[i][j] = 0;
+                        } else if (gameboardState[i][moveTo] === gameboardState[i][j]) {
+                            gameboardState[i][moveTo] = gameboardState[i][j] * 2;
+                            gameboardState[i][j] = 0;
+                        }
+                        changed = true;
                     }
                 }
-                if (moveTo !== i) {
-                    //animation
-                    if (gameboardState[i][moveTo] === 0) {
-                        gameboardState[i][moveTo] = gameboardState[i][j];
-                        gameboardState[i][j] = 0;
-                        this.setState({gameboardState: gameboardState});
-                    } else if (gameboardState[i][moveTo] === gameboardState[i][j]) {
-                        gameboardState[i][moveTo] = gameboardState[i][j] * 2;
-                        gameboardState[i][j] = 0;
-                        this.setState({gameboardState: gameboardState});
-                    }
-                }
+
+                moveTo = gameboardState.length - 1;
             }
         }
+
+        this.setState({ gameboardState: gameboardState });
+        return changed;
     }
 
     renderGrid(x, y) {
