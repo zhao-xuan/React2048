@@ -2,6 +2,10 @@
   text-align: center;
 }
 
+.info {
+  height: "200px";
+}
+
 .gameboard {
   width: 500px;
   height: 500px;
@@ -30,6 +34,8 @@
   line-height: 100px;
   font-size: 60px;
   font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  transition-property: left top;
+  transition-duration: 2s;
 }
 
 @media (prefers-reduced-motion: no-preference) {

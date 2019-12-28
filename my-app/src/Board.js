@@ -31,6 +31,7 @@ export default class Board extends React.Component {
             numToGrid: normalColor
         }
     }
+
     componentDidMount() {
         this.randomInitPosition(0.3);
     }
@@ -43,7 +44,6 @@ export default class Board extends React.Component {
             let y = Math.floor(Math.random() * 4);
             gameboardState[x][y] = Math.random() < probOfFour ? 4 : 2;
         }
-        console.log(gameboardState)
 
         this.setState({ gameboardState: gameboardState });
     }
@@ -65,7 +65,6 @@ export default class Board extends React.Component {
             for (var b = 0; b < gameboardState[a].length; b++) {
                 if (random === fillZero && gameboardState[a][b] === 0) {
                     gameboardState[a][b] = Math.random() < probOfFour ? 4 : 2;
-                    console.log(a + "-" + b)
                     this.setState({ gameboardState: gameboardState });
                     return;
                 }
@@ -102,6 +101,7 @@ export default class Board extends React.Component {
                     }
                     if (moveTo !== i) {
                         //animation
+                        this.gridAnimation(i, j, moveTo, j)
                         if (gameboardState[moveTo][j] === 0) {
                             gameboardState[moveTo][j] = gameboardState[i][j];
                             gameboardState[i][j] = 0;
@@ -227,10 +227,24 @@ export default class Board extends React.Component {
 
     renderGrid(x, y) {
         const num = this.state.gameboardState[x][y];
+        const windowWidth = window.innerWidth / 2 - 250;
+        const windowHeight = 106
 
         return (
-            <Tile id={"tile-" + x + "-" + y} bgcolor={this.state.numToGrid[num][0]} numcolor={this.state.numToGrid[num][1]} num={num}></Tile>
+            <Tile id={"tile-" + x + "-" + y} bgcolor={this.state.numToGrid[num][0]} numcolor={this.state.numToGrid[num][1]} left={windowWidth+20+y*120} top={windowHeight+20+x*123} num={num}></Tile>
         );
+    }
+
+    gridAnimation(fromx, fromy, tox, toy) {
+        let fromGrid = document.getElementById("tile-" + fromx + "-" + fromy);
+        let toGrid = document.getElementById("tile-" + tox + "-" + toy);
+
+        if (fromx === tox) {
+            fromGrid.top = toGrid.top;
+        } else {
+            fromGrid.left = toGrid.left;
+        }
+
     }
 
     render() {
