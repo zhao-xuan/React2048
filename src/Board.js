@@ -18,7 +18,10 @@ const normalColor = {
     8192: ["green", "white"]
 }
 
-export default class Board extends React.Component {
+var cellSpace = 10;
+var cellSideLength = 100;
+
+export default class Game extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -28,7 +31,8 @@ export default class Board extends React.Component {
                 [0, 0, 0, 0],
                 [0, 0, 0, 0]
             ],
-            numToGrid: normalColor
+            numToGrid: normalColor,
+            score: 0
         }
     }
 
@@ -100,13 +104,12 @@ export default class Board extends React.Component {
                         }
                     }
                     if (moveTo !== i) {
-                        //animation
-                        this.gridAnimation(i, j, moveTo, j)
                         if (gameboardState[moveTo][j] === 0) {
                             gameboardState[moveTo][j] = gameboardState[i][j];
                             gameboardState[i][j] = 0;
                         } else if (gameboardState[moveTo][j] === gameboardState[i][j]) {
                             gameboardState[moveTo][j] = gameboardState[i][j] * 2;
+                            this.setState({score : this.state.score + gameboardState[i][j]*2})
                             gameboardState[i][j] = 0;
                         }
                         changed = true;
@@ -141,6 +144,7 @@ export default class Board extends React.Component {
                             gameboardState[i][j] = 0;
                         } else if (gameboardState[moveTo][j] === gameboardState[i][j]) {
                             gameboardState[moveTo][j] = gameboardState[i][j] * 2;
+                            this.setState({score : this.state.score + gameboardState[i][j]*2})
                             gameboardState[i][j] = 0;
                         }
                         changed = true;
@@ -176,6 +180,7 @@ export default class Board extends React.Component {
                             gameboardState[i][j] = 0;
                         } else if (gameboardState[i][moveTo] === gameboardState[i][j]) {
                             gameboardState[i][moveTo] = gameboardState[i][j] * 2;
+                            this.setState({score : this.state.score + gameboardState[i][j]*2})
                             gameboardState[i][j] = 0;
                         }
                         changed = true;
@@ -211,6 +216,7 @@ export default class Board extends React.Component {
                             gameboardState[i][j] = 0;
                         } else if (gameboardState[i][moveTo] === gameboardState[i][j]) {
                             gameboardState[i][moveTo] = gameboardState[i][j] * 2;
+                            this.setState({score : this.state.score + gameboardState[i][j]*2})
                             gameboardState[i][j] = 0;
                         }
                         changed = true;
@@ -228,51 +234,91 @@ export default class Board extends React.Component {
     renderGrid(x, y) {
         const num = this.state.gameboardState[x][y];
         const windowWidth = window.innerWidth / 2 - 250;
-        const windowHeight = 106
+        const windowHeight = 160
 
         return (
-            <Tile id={"tile-" + x + "-" + y} bgcolor={this.state.numToGrid[num][0]} numcolor={this.state.numToGrid[num][1]} left={windowWidth+20+y*120} top={windowHeight+20+x*123} num={num}></Tile>
+            <Tile id={"tile-" + x + "-" + y} bgcolor={this.state.numToGrid[num][0]} numcolor={this.state.numToGrid[num][1]} left={windowWidth + 20 + y * 120} top={windowHeight + 20 + x * 123} num={num}></Tile>
         );
     }
 
-    gridAnimation(fromx, fromy, tox, toy) {
-        let fromGrid = document.getElementById("tile-" + fromx + "-" + fromy);
-        let toGrid = document.getElementById("tile-" + tox + "-" + toy);
+    gridAnimation(fromx, fromy, to, dir) {
+        var timer = null;
+        var target = this.getPos(to, dir)
+        var el = document.getElementById("tile-" + fromx + "-" + fromy);
+        timer = setInterval(function () {
+            if (parseInt(el.style[dir]) === target) {
+                clearInterval(timer);
+            }
+            var speed = (target - parseInt(el.style[dir])) / 5;
+            speed = speed > 0 ? Math.ceil(speed) : Math.floor(speed);
+            el.style[dir] = parseInt(el.style[dir]) + speed + 'px';
+        }, 50)
+    }
 
-        if (fromx === tox) {
-            fromGrid.top = toGrid.top;
-        } else {
-            fromGrid.left = toGrid.left;
-        }
+    getPos(i, dir) {
+        let pos = cellSpace + i * (cellSpace * 2 + cellSideLength);
+        return (dir === 'top') ? (pos + 106) : (pos + (window.innerWidth - 250))
+    }
 
+    newGame() {
+        this.setState({ gameboardState : [
+            [0, 0, 0, 0],
+            [0, 4, 0, 0],
+            [0, 0, 2, 0],
+            [0, 0, 0, 0]
+        ]})
     }
 
     render() {
         return (
-            <div className="gameboard" onKeyDown={e => this.handleMove(e)} tabIndex="0">
-                <div className="row" id="row-0">
-                    <div className="boardGrid" id="board-0-0">{this.renderGrid(0, 0)}</div>
-                    <div className="boardGrid" id="board-0-1">{this.renderGrid(0, 1)}</div>
-                    <div className="boardGrid" id="board-0-2">{this.renderGrid(0, 2)}</div>
-                    <div className="boardGrid" id="board-0-3">{this.renderGrid(0, 3)}</div>
+            <div>
+                <div className="info">
+                    <h1 id="gameTitle">2048</h1>
+                    <button id="newgame" onClick={e => this.newGame()}>New Game</button>
+                    <h3 id="score">Score: {this.state.score}</h3>
+                    <h3 id="bestscore">Best: {this.state.score}</h3>
                 </div>
-                <div className="row" id="row-1">
-                    <div className="boardGrid" id="board-1-0">{this.renderGrid(1, 0)}</div>
-                    <div className="boardGrid" id="board-1-1">{this.renderGrid(1, 1)}</div>
-                    <div className="boardGrid" id="board-1-2">{this.renderGrid(1, 2)}</div>
-                    <div className="boardGrid" id="board-1-3">{this.renderGrid(1, 3)}</div>
-                </div>
-                <div className="row" id="row-2">
-                    <div className="boardGrid" id="board-2-0">{this.renderGrid(2, 0)}</div>
-                    <div className="boardGrid" id="board-2-1">{this.renderGrid(2, 1)}</div>
-                    <div className="boardGrid" id="board-2-2">{this.renderGrid(2, 2)}</div>
-                    <div className="boardGrid" id="board-2-3">{this.renderGrid(2, 3)}</div>
-                </div>
-                <div className="row" id="row-3">
-                    <div className="boardGrid" id="board-3-0">{this.renderGrid(3, 0)}</div>
-                    <div className="boardGrid" id="board-3-1">{this.renderGrid(3, 1)}</div>
-                    <div className="boardGrid" id="board-3-2">{this.renderGrid(3, 2)}</div>
-                    <div className="boardGrid" id="board-3-3">{this.renderGrid(3, 3)}</div>
+                <div className="gameboard" onKeyDown={e => this.handleMove(e)} tabIndex="0">
+                    <div className="row" id="row-0">
+                        <div className="boardGrid" id="board-0-0"></div>
+                        <div className="boardGrid" id="board-0-1"></div>
+                        <div className="boardGrid" id="board-0-2"></div>
+                        <div className="boardGrid" id="board-0-3"></div>
+                    </div>
+                    <div className="row" id="row-1">
+                        <div className="boardGrid" id="board-1-0"></div>
+                        <div className="boardGrid" id="board-1-1"></div>
+                        <div className="boardGrid" id="board-1-2"></div>
+                        <div className="boardGrid" id="board-1-3"></div>
+                    </div>
+                    <div className="row" id="row-2">
+                        <div className="boardGrid" id="board-2-0"></div>
+                        <div className="boardGrid" id="board-2-1"></div>
+                        <div className="boardGrid" id="board-2-2"></div>
+                        <div className="boardGrid" id="board-2-3"></div>
+                    </div>
+                    <div className="row" id="row-3">
+                        <div className="boardGrid" id="board-3-0"></div>
+                        <div className="boardGrid" id="board-3-1"></div>
+                        <div className="boardGrid" id="board-3-2"></div>
+                        <div className="boardGrid" id="board-3-3"></div>
+                    </div>
+                    {this.renderGrid(0, 0)}
+                    {this.renderGrid(0, 1)}
+                    {this.renderGrid(0, 2)}
+                    {this.renderGrid(0, 3)}
+                    {this.renderGrid(1, 0)}
+                    {this.renderGrid(1, 1)}
+                    {this.renderGrid(1, 2)}
+                    {this.renderGrid(1, 3)}
+                    {this.renderGrid(2, 0)}
+                    {this.renderGrid(2, 1)}
+                    {this.renderGrid(2, 2)}
+                    {this.renderGrid(2, 3)}
+                    {this.renderGrid(3, 0)}
+                    {this.renderGrid(3, 1)}
+                    {this.renderGrid(3, 2)}
+                    {this.renderGrid(3, 3)}
                 </div>
             </div>
         )

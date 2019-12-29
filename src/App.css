@@ -1,0 +1,96 @@
+body {
+  background-color: antiquewhite;
+}
+
+.App {
+  text-align: center;
+}
+
+.info {
+  height: "200px";
+}
+
+.gameboard {
+  width: 500px;
+  height: 500px;
+  background-color: burlywood;
+  border-radius: 20px;
+  padding-top: 10px;
+  margin: auto;
+  margin-top: 40px;
+}
+
+.boardGrid {
+  width: 100px;
+  height: 100px;
+  background-color: chocolate;
+  margin: 10px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.Tile {
+  width: 100px;
+  height: 100px;
+  border-radius: 20px;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 100px;
+  font-size: 60px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.info {
+  background-color: rgb(201, 167, 31);
+  width: 500px;
+  height: 100px;
+  margin: auto;
+  margin-top: 20px;
+  border-radius: 20px;
+}
+
+#gameTitle {
+  display: inline-block;
+  float: left;
+  width: 100px;
+  color: white;
+  text-align: left;
+  line-height: 60px;
+  margin-left: 30px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+#score {
+  color: white;
+  display: inline-block;
+  float: right;
+  margin-top: 25px;
+  line-height: 5px;
+  margin-right: 30px;
+  width: 120px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+#bestscore {
+  color: white;
+  display: inline-block;
+  float: right;
+  line-height: 5px;
+  margin-right: 30px;
+  width: 120px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+#newgame {
+  font-size: 18px;
+  font-weight: 700;
+  color: antiquewhite;
+  padding: 10px;
+  margin-right: 20px;
+  margin-top: 28px;
+  background-color: beige;
+  border-radius: 10px;
+  float: right;
+  background-color: darkgoldenrod;
+  border: 0
+}
